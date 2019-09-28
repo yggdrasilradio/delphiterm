@@ -1,0 +1,3184 @@
+********************************
+*                              *
+*    DELPHIterm Version 4.1    *
+*                              *
+* Copyright 1991 by Rick Adams *
+*                              *
+********************************
+
+* EQUIV DEFINITIONS
+*
+
+* (BAUDX was 7)
+BAUDX  EQU 4
+BLANK  EQU 32
+ESC    EQU $1B
+BREAK  EQU 5
+CR     EQU 13
+LF     EQU 10
+BS     EQU 8
+FF     EQU $0C
+CTLG   EQU $07
+CTLY   EQU $19
+XON    EQU $11
+XOFF   EQU $13
+SZOUT  EQU $FF   SIZE OF OUTPUT BUFFER
+SZIN   EQU $FF   SIZE OF INPUT BUFFER
+ATTR   EQU $0
+COATTR EQU $9
+WATTR  EQU $12
+WCATTR EQU $24
+CATTR  EQU $1B
+*----------------------------
+*DIRECT PAGE COMMON
+*
+       ORG 0
+*-------------------------------
+*
+*SCREEN DISPLAY COMMON
+*
+LMAX   RMB 1    MAX LINE
+LINCOL
+LIN    RMB 1    CUR LINE
+COL    RMB 1    CUR COL
+LCOL1  RMB 2
+LCOL2  RMB 2
+CCOL   RMB 1    CUR CO-TERM COL
+COMODE RMB 1    CO-TERM MODE
+EMODE  RMB 1    EDIT MODE
+VMODE  RMB 1    VIEW MODE
+SMODE  RMB 1    SPLIT SCREEN MODE
+CUATTR RMB 1    CURSOR ATTRIBUTE
+SCREEN RMB 2    ADDRESS OF SCREEN
+CURSON RMB 1    "CURSOR ON" FLAG
+WINBUF RMB 2    WINDOW POINTER
+BMARK  RMB 2    BEGIN MARK
+EMARK  RMB 2    END MARK
+SCFIX  RMB 1    scroll fix
+BUFPTR RMB 2
+SZBUF  RMB 2    size of buffer
+ENBUF  RMB 2    end of buffer
+AFLAG  RMB 1
+SAVBUF RMB 2
+SCRIPT RMB 1    scripting enable
+MAP    RMB 1    active MMU map
+
+*-------------------------------
+* COMMUNICATIONS COMMON
+*
+CARD    RMB 1
+XSLICE  RMB 1
+XBIT    RMB 1
+XCHAR   RMB 1
+RSLICE  RMB 1
+RBIT    RMB 1
+RCHAR   RMB 1
+DHOLD   RMB 2
+XHOLD   RMB 2
+MASK    RMB 1
+XLOCK   RMB 1
+*-------------------------------
+* BUFFERED I/O POINTERS
+*
+GETOUT RMB 2  RS232 OUT
+PUTOUT RMB 2
+OCNT   RMB 1
+GETIN  RMB 2  RS232 IN
+PUTIN  RMB 2
+ICNT   RMB 1
+PRPTR  RMB 2  PRINTER OUT
+PRLEN  RMB 2
+*-----
+*
+*KEYBOARD COMMON
+*
+KEYNO  RMB 1
+KEYON  RMB 1
+KEYTIM RMB 1
+KBPUT  RMB 1
+KBGET  RMB 1
+SHLOK  RMB 1 shift lock
+BUTTON RMB 1
+
+* Stuff for new keyboard driver *
+KRT    RMB 8 keyboard rollover table
+KROW   RMB 1
+KCOL   RMB 1
+RDATA  RMB 1
+RTCOL  RMB 1
+
+*-------
+*
+*FILE CONTROL / DISK COMMON
+*
+FGRAN  RMB 1  CURRENT GRANULE
+FSECT  RMB 1  CURRENT SECTOR
+FPTR   RMB 2  ADDR OF FILE BLOCK
+FINDX  RMB 1  INDEX OF FILE
+FDKADR RMB 2  DISK ADDR OF FB
+TOTSIZ RMB 1  #GRANS USED (USED BY DIR)
+ENDPTR RMB 2  USED IN DSAVE
+CMND   RMB 1  CURRENT DISK COMMAND
+DRIVE  RMB 1  UNIT #
+TRACK  RMB 1  PHYSICAL DISK ADDRESS
+SECTOR RMB 1   "        "     "
+BUFAD  RMB 2  MEM ADDRESS
+STATUS RMB 1  STATUS
+NGRANS RMB 1  max number of grans
+*
+*DISK I/O TEMP STORAGE
+*
+DDCNT   RMB 1
+RETRY   RMB 1
+DKCOMS  RMB 4
+DKCOM   RMB 1
+*NMION   RMB 1
+TEMP    RMB 2
+BUFCNT  RMB 2
+MACCNT  RMB 2
+RECRDG  RMB 1
+TABPAD  RMB 1
+
+* XMODEM DATA
+BLOCK  RMB   2 BLOCK #
+ERRS   RMB   1 NUMBER OF ERRORS
+CKSUM  RMB   1 checksum
+XCKSUM RMB   1
+CRC    RMB   2 crc value
+XCRC   RMB   2
+XMLEN  RMB   2 buffer length
+XMSIZ  RMB   2 block size
+XMRET  RMB   2 saved stack ptr
+XMCSZ  RMB   1 checksum size
+
+*Split screen data
+KEY    RMB   80 secondary window key
+SINDX  RMB   1  match index
+
+*------------------------------
+* PARAMETERS POKED IN BY BASIC
+*
+       ORG $200
+CMAX   RMB 1    MAX COL
+LFMAR  RMB 1    LEFT MARGIN
+FCOLOR RMB 1    FOREGROUND COLOR
+BCOLOR RMB 1    BACKGROUND COLOR
+RBAUD  RMB 1    RS232 BAUD INDEX
+       RMB 1    UNUSED
+BBAUD  RMB 1    BITBANGER BAUD INDEX
+PBAUD  RMB 1    printer baud
+AUTOLF RMB 1    0-NO, 1-YES
+DUPLEX RMB 1    0-FULL, 1-HALF
+FLOW   RMB 1    1-XON/XOFF
+RATE   RMB 1    disk step rate
+COFORE RMB 1    co-line fg color
+COBACK RMB 1    co-line bg color
+WFORE  RMB 1    2nd window fg color
+WBACK  RMB 1    2nd window bg color
+       RMB 1    unused
+ULOGON RMB 1    "Use MACRO file" flag
+ACIA   RMB 2    address of ACIA pak
+TUNE   RMB 2    serial port tune
+UNIT   RMB 1    default disk unit #
+NTRAKS RMB 4    # of tracks
+MEMSZ  RMB 1    mem size (0=128 1=512)
+
+ ORG $982
+NMION  RMB 1
+
+*------------------------------
+*BUFFERS
+*
+
+        ORG $1100
+STKBUF  RMB 0        STACK BACK FROM HERE
+VIDBUF  RMB $1800    SCREEN
+ALCBUF  RMB 256      SECTOR ALLOC TABLE
+DIRBUF  RMB 256      DIRECTORY SECTOR
+KEYBUF  RMB 256      KEYBOARD BUFFER
+LINE    RMB 80       GET LINE BUFFER
+INBUF   RMB SZIN     INPUT BUF
+OUTBUF  RMB SZOUT    OUTPUT BUF
+FILBUF  RMB 16       FORMATTED FILENAME
+CSTART  RMB 0        code start
+
+*=============================
+*   MAINLINE
+*=============================
+       ORG $3100
+MAIN
+
+*-----------------------------
+*INITIALIZATION
+*
+ ORCC #$50
+ LDS #STKBUF
+ CLRB
+ EXG B,DP
+*CLR ROMFLG  **disable**
+
+* clear base page
+ CLRB
+ LDX #0
+A@
+ CLR ,X+
+ DECB
+ BNE A@
+
+* init keyboard rollover table
+ LDD #$FFFF
+ STD KRT
+ STD KRT+2
+ STD KRT+4
+ STD KRT+6
+
+* move lower in memory and restart
+*LEAX ENTRY,PCR
+*LDY #CSTART
+*A@
+*LDA ,X+
+*STA ,Y+
+*CMPX #ZPROG
+*BNE A@
+*LBRA CSTART  banzai!
+
+ENTRY
+* figure out memory size
+*LDB #$4C
+*STB $FF90 enable MMU
+*LDA #$60
+*STA $FF91 force map 0
+*LDD #$3B0B
+*STA $FFA3
+*STB $FFA4
+*LDA #1
+*STA BUF
+*CLR BUF+8192
+*LDA BUF
+* A will be 0 if ghosting (128K)
+* A will be 1 if no ghosting (512K)
+*STA MEMSZ
+ 
+ LBSR INIMMU
+
+*LDD #$B000-$FF
+ LDD #$FFFF-$FF-$FF-BUF
+ STD SZBUF
+ ADDD #BUF
+ STD ENBUF
+ LDA #1
+ STA CURSON   cursor on
+ LDD #0
+ LDX #BUF     init window pos
+ STX WINBUF
+ LDA #$7F
+ STA MASK     7-bit mode
+ LDX #VIDBUF
+ STX SCREEN
+ LDA #24
+ STA LMAX   number of lines
+ LDB TUNE
+ SEX
+ STD TUNE
+ CLR $FFD9      SPEED UP CPU
+
+ TST ULOGON
+ BNE A@
+ CLR $FF40      TURN OFF DISK MOTOR
+A@
+
+ STB $FFDF      SET 64K MODE
+ LDA #$C0
+ STA CUATTR     SET DEFAULT CURSOR
+ LBSR CLRSCN    CLEAR SCREEN
+
+*TST ROMFLG
+*BNE A@
+* TAKE OVER NMI
+ LEAX DONMI,PCR
+ STX $10A
+A@
+
+* TAKE OVER IRQ
+ LEAX DOIRQ,PCR
+ STX $10D
+
+* SET UP ACIA
+ LDA RBAUD
+ LEAX BDTABR,PCR
+ LDA A,X
+ ORA #$10
+ LDX ACIA
+ STA 3,X
+ CMPA 3,X
+ LBNE C@
+ LDA #$05
+ STA 2,X
+ CMPA 2,X
+ LBNE C@
+*
+*THERE IS ACIA PAK
+ INC CARD
+C@
+
+*
+*SET UP COMMUNICATIONS COMMON
+ LBSR IOINIT
+ LBSR TIMER     turn on timer
+ ANDCC #$AF     ENABLE INTERRUPTS
+
+*-----------------------------
+*BODY OF MAINLINE
+*
+
+ LBSR CURS
+ LEAX TITL40,PCR
+ LDA CMAX
+ CMPA #80
+ BNE NOT80
+ LEAX TITL80,PCR
+NOT80
+ LBSR MSG
+ LBSR RLOGON   read logon macros
+
+* FORMAT RAMDISK!!
+ LBSR RDSKFM
+
+
+* Main keyboard/screen/RS232 loop
+LOOP1
+ LBSR GET   KEYBOARD -> A REG
+ TSTA
+ LBMI LOOP4
+
+ TST EMODE make arrows work
+ BNE A@    in E mode too
+ TST VMODE
+ BEQ LOOP11
+A@
+ 
+*View mode
+ CMPA #$0C up arrow
+ BNE LOOPA
+ LBSR UPARW
+ LBSR REFRES
+ LBRA LOOP1
+
+LOOPA
+ CMPA #$0A down arrow
+ BNE LOOPB
+ LBSR DNARW
+ LBSR REFRES
+ LBRA LOOP1
+
+LOOPB
+ CMPA #$1C shift-uparrow
+ BNE LOOPC
+ LBSR UPARW
+ LBSR UPARW
+ LBSR UPARW
+ LBSR XR
+ LBSR UPARW
+ LBSR UPARW
+ LBSR UPARW
+ LBSR UPARW
+ LBSR XR
+ LBSR UPARW
+ LBSR UPARW
+ LBSR UPARW
+ LBSR REFRES
+ LBRA LOOP1
+
+LOOPC
+ CMPA #$19 shift-downarrow
+ BNE LOOP11
+ LBSR DNARW
+ LBSR DNARW
+ LBSR DNARW
+ LBSR XR
+ LBSR DNARW
+ LBSR DNARW
+ LBSR DNARW
+ LBSR DNARW
+ LBSR XR
+ LBSR DNARW
+ LBSR DNARW
+ LBSR DNARW
+ LBSR REFRES
+ LBRA LOOP1
+
+LOOP11
+ TST EMODE
+ LBEQ LOOP12
+
+*Edit mode
+ PSHS A
+ LDX #BUF address of buf end
+ LDD BUFCNT
+ LEAX D,X
+ ADDD #1 bump to next
+ STD BUFCNT
+ PULS A
+ CMPA #BS
+ BNE EDNM
+
+*Backspace
+ LDD BUFCNT nothing to backspace over?
+ CLR BUFCNT
+ CLR BUFCNT+1
+ SUBD #2
+ LBLT LOOP1
+ STD BUFCNT
+ LBSR REFRES
+ LBRA LOOP1
+
+*Normal character
+EDNM
+ CMPA #ESC  BREAK key?
+ BEQ EDZAP
+ STA ,X put in buffer
+ LBSR REFRES and show it
+ TST COMODE  co mode?
+ LBEQ LOOP1
+ LBRA LOOP1
+
+EDZAP
+ LDD BUFCNT forget ESC
+ SUBD #1
+ STD BUFCNT
+ LDA -1,X
+ CMPA #CR end with CR?
+ BEQ A@
+*need cr at end
+ LDA #CR
+ STA ,X
+ LDD BUFCNT
+ ADDD #1
+ STD BUFCNT
+A@
+ LDA #'B
+ LBSR BCMD    send edit buffer
+ LDA #'K
+ LBSR KCMD    kill edit buffer
+ LBRA LOOP1
+
+LOOP12
+ TST COMODE
+ BEQ LOOP3
+ CMPA #BS
+ LBEQ LOOP1
+ CMPA #BLANK
+ LBGE LOOP1
+ TFR A,B
+ LDA CCOL
+ LDX SCREEN
+ PSHS A
+COLP
+ DEC ,S
+ BLT XCOLP
+ LDA ,X++
+ LBSR ECHO
+ BRA COLP
+XCOLP
+ TFR B,A
+ LBSR ECHO
+ PULS A
+ LDB #COATTR
+ LBSR CLRCO
+ LBRA LOOP1
+
+LOOP3
+ LBSR ECHO
+ LBRA LOOP1
+
+ECHO
+ PSHS D
+ TST DUPLEX skip if full duplex
+ BEQ A@
+ LBSR PUT  a reg to screen
+A@
+ LBSR SEND a reg to rs232
+ PULS D,PC
+
+*ALT KEY COMMANDS *****
+LOOP4
+ LBSR DOCMD
+ LBRA LOOP1
+
+* Do ALT key commands
+DOCMD
+ ANDA #$7F
+ PSHS A
+ LBSR ICMD
+ LDA ,S
+ LBSR ALTF1
+ LDA ,S
+ LBSR ALTF2
+ LDA ,S
+ LBSR CLRCMD
+ LDA ,S
+ LBSR ACMD
+ LDA ,S
+ LBSR MCMD
+ LDA ,S
+ LBSR ZCMD
+ LDA ,S
+ LBSR GCMD
+ LDA ,S
+ LBSR HCMD
+ LDA ,S
+ LBSR RCMD
+ LDA ,S
+ LBSR TCMD
+ LDA ,S
+ LBSR NCMD
+ LDA ,S
+ LBSR WCMD
+ LDA ,S
+ LBSR OCMD
+ LDA ,S
+ LBSR BCMD
+ LDA ,S
+ LBSR SCMD
+ LDA ,S
+ LBSR YCMD
+ LDA ,S
+ LBSR PCMD
+ LDA ,S
+ LBSR XCMD
+ LDA ,S
+ LBSR CCMD
+ LDA ,S
+ LBSR LCMD
+ LDA ,S
+ LBSR CMD0
+ LDA ,S
+ LBSR CMDF1
+ LDA ,S
+ LBSR DCMD
+ LDA ,S
+ LBSR UCMD
+ LDA ,S
+ LBSR VCMD
+ LDA ,S
+ LBSR ECMD
+ LDA ,S
+ LBSR KCMD
+ LDA ,S
+ LBSR CMDENT
+ LDA ,S
+ LBSR FCMD
+ PULS A,PC
+
+* ALT-F1 - toggle RS232 pak baudrate
+ALTF1
+ CMPA #$64
+ BNE X@
+ TST CARD
+ BNE A@
+ LBSR XMPRT
+ FCC "NO RS232 PAK"
+ FCB 13,10
+ FCB 0
+ RTS
+A@
+ LDA RBAUD
+ INCA
+ CMPA #3
+ BLT B@
+ CLRA
+B@
+ STA RBAUD
+ LBSR XMPRT
+ FCB 13
+ FCC "RS232 PAK BAUD: "
+ FCB 0
+ LDA RBAUD
+ LDB #5
+ MUL
+ LEAX RTXTB,PCR
+ LEAX D,X
+ LBSR MSG
+ LBSR XMPRT
+ FCC " BAUD"
+ FCB 13
+ FCB 0
+ LDA RBAUD
+ LEAX BDTABR,PCR
+ LDA A,X
+ LDX ACIA
+ ORA #$10
+ STA 3,X
+X@
+ RTS
+
+RTXTB
+ FCC "300"
+ FCB 0
+ FCB 0
+ FCC "1200"
+ FCB 0
+ FCC "2400"
+ FCB 0
+
+* ALT-F2 - toggle bitbanger baudrate
+ALTF2
+ CMPA #$65
+ BNE X@
+ LDA BBAUD
+ INCA
+ CMPA #3
+ BLT B@
+ CLRA
+B@
+ STA BBAUD
+ LBSR XMPRT
+ FCB 13
+ FCC "SERIAL PORT BAUD: "
+ FCB 0
+ LDA BBAUD
+ LDB #5
+ MUL
+ LEAX RTXTB,PCR
+ LEAX D,X
+ LBSR MSG
+ LBSR XMPRT
+ FCC " BAUD"
+ FCB 13
+ FCB 0
+ LDB BBAUD
+ CLRA
+ LSLB
+ LEAX BDTABB,PCR
+ LDD D,X
+ ADDD TUNE
+ STB $FF95
+ STA $FF94
+X@
+ RTS
+
+* CLEAR - Clear screen
+CLRCMD
+ CMPA #$62
+ BNE X@
+ LBSR CLS
+ LBSR FIXCO
+ LBSR CURS
+X@
+ RTS
+
+* A - Turn xmodem alarm on/off
+ACMD
+ CMPA #'A
+ BNE X@
+ LDA AFLAG
+ INCA
+ ANDA #1
+ STA AFLAG
+ BEQ A@
+ LBSR XMPRT
+ FCC "ALARM IS ON"
+ FCB 13
+ FCB 0
+ RTS
+A@
+ LBSR XMPRT
+ FCC "ALARM IS OFF"
+ FCB 13
+ FCB 0
+X@
+ RTS
+
+* ALT-ENTER
+
+CMDENT
+ CMPA #$5B
+ BNE X@
+ LBSR XMPRT
+ FCC "AUTO LINEFEED "
+ FCB 0
+ LDA AUTOLF
+ INCA
+ ANDA #1
+ STA AUTOLF
+ BEQ A@
+ LBSR XMPRT
+ FCC "ON"
+ FCB 13
+ FCB 0
+ RTS
+A@
+ LBSR XMPRT
+ FCC "OFF"
+ FCB 13
+ FCB 0
+X@
+ RTS
+
+
+* F1 and F2 MACROS
+
+CMDF1
+ CMPA #$60
+ BEQ A@
+ CMPA #$61
+ BNE XCMDF1
+A@
+ ANDA #3
+ ADDA #'1
+ LDX #LINE
+ STA 1,X
+ LDA #'F
+ STA ,X
+ LDA #$0D
+ STA 2,X
+ INC SCRIPT
+ LBSR XMTSEQ
+ CLR SCRIPT
+
+XCMDF1
+ RTS
+
+FIXCO
+ PSHS B
+ TST COMODE
+ BEQ A@
+ LDB #COATTR
+ LBSR CLRCO
+A@
+ PULS B,PC
+
+* I - re-initialize i/o
+ICMD
+ CMPA #$49
+ BNE A@
+ LBSR BEEP
+IOINIT
+ LDX #OUTBUF
+ STX GETOUT
+ STX PUTOUT
+ CLR OCNT
+ LDX #INBUF
+ STX GETIN
+ STX PUTIN
+ CLR ICNT
+A@
+ RTS
+
+* Y - trap door
+YCMD
+ CMPA #'Y
+ LBNE XYCMD
+
+ LEAU ZORK,PCR
+A@
+ LDA ,U+
+ CMPA #$FF
+ BEQ XYCMD
+ ADDA #'A
+ LBSR PUT
+ BRA A@
+
+XYCMD
+ RTS
+
+ZORK
+ FCB 13-'A
+ FCB 10-'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB ' -'A
+ FCB 'C-'A
+ FCB 'o-'A
+ FCB 'l-'A
+ FCB 'o-'A
+ FCB 'r-'A
+ FCB ' -'A
+ FCB 'C-'A
+ FCB 'e-'A
+ FCB 'n-'A
+ FCB 't-'A
+ FCB 'r-'A
+ FCB 'a-'A
+ FCB 'l-'A
+ FCB ' -'A
+ FCB 's-'A
+ FCB 'e-'A
+ FCB 'z-'A
+ FCB ' -'A
+ FCB '"-'A
+ FCB 'J-'A
+ FCB 'u-'A
+ FCB 's-'A
+ FCB 't-'A
+ FCB ' -'A
+ FCB 's-'A
+ FCB 'a-'A
+ FCB 'y-'A
+ FCB ' -'A
+ FCB 'n-'A
+ FCB 'o-'A
+ FCB '"-'A
+ FCB ' -'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB 13-'A
+ FCB 10-'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB ' -'A
+ FCB 't-'A
+ FCB 'o-'A
+ FCB ' -'A
+ FCB 's-'A
+ FCB 'o-'A
+ FCB 'f-'A
+ FCB 't-'A
+ FCB 'w-'A
+ FCB 'a-'A
+ FCB 'r-'A
+ FCB 'e-'A
+ FCB ' -'A
+ FCB 'p-'A
+ FCB 'i-'A
+ FCB 'r-'A
+ FCB 'a-'A
+ FCB 'c-'A
+ FCB 'y-'A
+ FCB '!-'A
+ FCB ' -'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB '*-'A
+ FCB 13-'A
+ FCB 10-'A
+ FCB $FF
+
+* F - disk directory
+FCMD
+ CMPA #'F
+ LBNE XFCMD
+ LBSR XMPRT
+ FCB 13
+ FCC "DRIVE: "
+ FCB 0
+ LBSR GETLIN
+ LDA ,X
+ CMPA #'A
+ BEQ A@
+ CMPA #'B
+ BEQ A@
+ SUBA #'0
+ BLT XFCMD
+ CMPA #7
+ BGE XFCMD
+A@
+ STA DRIVE
+ LBSR DIR
+
+XFCMD
+ RTS
+
+* M - MARK BEGIN/END BUFFER BLOCK
+MCMD
+ CMPA #'M
+ LBNE XMCMD
+
+ LDD EMARK
+ BNE NOMK
+ LDD BMARK
+ BEQ NOMK
+
+*Beginning is marked.
+ CMPD EMARK
+ BEQ NULMK
+
+*End needs to be marked.
+ LDD WINBUF
+ STD EMARK
+ LBSR XMPRT
+ FCC "END BLOCK MARKED"
+ FCB 13
+ FCB 0
+ LBSR BEEP
+ BRA XMCMD
+
+*Begin, end marks are same
+NULMK
+ LDD #0
+ STD BMARK
+ STD EMARK
+ LBSR XMPRT
+ FCC "MARKS REMOVED"
+ FCB 13
+ FCB 0
+ LBSR BEEP
+ BRA XMCMD
+
+*No begin mark.
+NOMK
+ LDD WINBUF   mark beginning
+ STD BMARK
+ LDD #0
+ STD EMARK    clear end mark
+ LBSR XMPRT
+ FCC "BEGIN BLOCK MARKED"
+ FCB 13
+ FCB 0
+ LBSR BEEP
+
+XMCMD
+ RTS
+
+NSA
+ FCC " ****** "
+ FCC " The CIA terrorist NSA uses "
+ FCC "encrypted Iranian drugs as "
+ FCC "ammunition for its crack AK-47 "
+ FCC "SAM MIG encoded NRO DES Russian "
+ FCC "socialist propaganda Tempest "
+ FCC "missile cocaine assassination "
+ FCC "conspiracies. "
+ FCC " ****** "
+
+* Z - TRANSMIT TRUE LINE BREAK
+ZCMD
+ CMPA #'Z
+ BNE  XZCMD
+ TST CARD
+ BEQ ZCMD1
+
+* true line break for RS232 card
+ LDX ACIA
+ LDA 2,X
+ PSHS A
+ ORA #$0C
+ STA 2,X
+ LDX #4000    delay
+ZWAIT
+ LBSR XR
+ LEAX -1,X
+ BNE ZWAIT
+
+ PULS A
+ LDX ACIA
+ STA 2,X
+ BRA XZCMD
+
+* true line break for bitbanger
+ZCMD1
+ LDA $FF20
+ PSHS A
+ CLR $FF20
+ LDX #8000
+ZWAIT2
+ LEAX -1,X
+ BNE ZWAIT2
+ PULS A
+ STA $FF20
+
+XZCMD
+ RTS
+
+* G - DELAY FOR 1/4 SEC
+GCMD
+ CMPA #'G
+ BNE  XGCMD
+ TST SCRIPT
+ BEQ XGCMD
+ LBSR GET
+ SUBA #'0
+ CMPA #9
+ BHI XGCMD
+ PSHS A
+A@
+ DEC ,S
+ BLT X@
+ LDX #4000    delay
+GWAIT
+ LBSR XR
+ LEAX -1,X
+ BNE GWAIT
+ BRA A@
+X@
+ LEAS 1,S
+
+XGCMD
+ RTS
+
+* K - KILL CONTENTS OF BUFFER
+KCMD
+ CMPA #'K
+ LBNE XKCMD
+ LDD #0
+ STD BUFCNT    clear buffer
+ STD BMARK     clear marks
+ STD EMARK
+ TST EMODE
+ BNE A@
+ LBSR XMPRT
+ FCC "BUFFER CLEARED"
+ FCB 13
+ FCB 0
+A@
+ LDX #BUF      reset window position
+ STX WINBUF
+ LDA EMODE     emode vmode or smode?
+ ORA VMODE
+ ORA SMODE
+ TSTA
+ BEQ XKCMD
+ LBSR REFRES   refresh upper window
+
+XKCMD
+ RTS
+
+
+* V - TOGGLE VIEW MODE
+VCMD
+ CMPA #'V
+ LBNE XVCMD
+ COM VMODE
+ BEQ VMOFF
+
+ TST EMODE E mode on?
+ BEQ VMON
+ LBSR BEEP error - beep
+ CLR VMODE don't go into V mode
+ LBRA XVCMD
+
+*TURN ON V MODE
+VMON
+ LBSR CURS turn off cursor
+ LDD LINCOL
+ PSHS D save old cursor pos
+ CMPA #12
+ BGE VCMD1
+
+*Cursor is in upper half of screen
+ LBSR COPY12 copy upper to lower
+ BRA VCMD2
+
+*Cursor is in lower half of screen
+VCMD1
+ LDD ,S
+ SUBA #12 fudge cursor
+ STD ,S 
+
+VCMD2
+*display buffer on upper half of screen
+ LBSR WIND1
+ LBSR REFRES
+ LDA $FFB0
+ CMPA $FFB2
+ BNE A@
+ LBSR VULINE underline
+A@
+
+*put cursor back on lower half
+ LBSR WIND2
+ PULS D
+ STD LINCOL re-establish cursor pos
+ LBSR CURS turn cursor back on
+ TST COMODE
+ LBEQ XVCMD
+ LDB #COATTR fix co line
+ LBSR CLRCO
+ LBRA XVCMD
+
+*TURN OFF V MODE
+VMOFF
+ LBSR CURS turn off cursor
+ LDD LINCOL
+ PSHS D save old cursor pos
+ LBSR COPY21 copy lower to upper
+ LBSR CLS clear lower half
+ LBSR WIND0 back to full screen
+ PULS D re-stablish cursor pos
+ STD LINCOL
+ LBSR CURS turn cursor back on
+ LDX #BUF
+ STX WINBUF
+
+XVCMD
+ RTS
+
+* S - TOGGLE SPLIT SCREEN MODE
+*SCMD
+*CMPA #'S
+*LBNE XSCMD
+*COM SMODE
+*BEQ SMOFF
+
+*LDA VMODE V or E modes on?
+*ORA EMODE
+*BEQ SMON
+*LBSR BEEP error - beep
+*CLR SMODE don't go into S mode
+*LBRA XSCMD
+
+*TURN ON S MODE
+*SMON
+*CLR SMODE
+*LBSR XMPRT
+*FCB 13
+*FCC "KEY: "
+ FCB 0
+*LBSR GETLIN
+*LDA ,X
+*CMPA #CR
+*BEQ XSCMD
+*COM SMODE
+*CLR LCOL1
+*CLR LCOL1+1
+*LDY #KEY
+SMONL
+*LDA ,X+
+*STA ,Y+
+*CMPA #CR
+*BNE SMONL
+*CLR SINDX
+
+*LBSR CURS turn off cursor
+*LDD LINCOL
+*PSHS D save old cursor pos
+*CMPA #12
+*BGE SCMD1
+
+*Cursor is in upper half of screen
+*LBSR COPY12 copy upper to lower
+*BRA SCMD2
+
+*Cursor is in lower half of screen
+SCMD1
+*LDD ,S
+*SUBA #12 fudge cursor
+*STD ,S 
+
+SCMD2
+*clear upper half of screen
+*LBSR WIND1
+*LBSR CLS
+*LBSR VULINE underline
+
+*put cursor back on lower half
+*LBSR WIND2
+*PULS D
+*STD LINCOL re-establish cursor pos
+*LBSR CURS turn cursor back on
+*LBRA XSCMD
+
+*TURN OFF S MODE
+SMOFF
+*LBSR CURS turn off cursor
+*LDD LINCOL
+*PSHS D save old cursor pos
+*LBSR COPY21 copy lower to upper
+*LBSR CLS clear lower half
+*LBSR WIND0 back to full screen
+*PULS D re-stablish cursor pos
+*STD LINCOL
+*LBSR CURS turn cursor back on
+
+*XSCMD
+*RTS
+
+* copy upper to lower half-screen
+COPY12
+ LDX #VIDBUF
+ LDA CMAX
+ LDB #12*2
+ MUL
+ LEAY D,X
+ PSHS D
+COPYL
+ LDD ,X++
+ STD ,Y++
+ LDD ,X++
+ STD ,Y++
+ LDD ,S
+ SUBD #4
+ STD ,S
+ BNE COPYL
+ PULS D
+ RTS
+
+* copy lower to upper half
+COPY21
+ LDY #VIDBUF
+ LDA CMAX
+ LDB #12*2
+ MUL
+ LEAX D,Y
+ PSHS D
+ BRA COPYL
+
+* E - TOGGLE EDIT MODE
+ECMD
+ CMPA #'E
+ LBNE XECMD
+ COM EMODE
+ BEQ EMOFF
+ TST VMODE View mode on?
+ BEQ EMON
+ LBSR BEEP error - beep
+ CLR EMODE don't go into E mode
+ LBRA XECMD
+
+*TURN ON E MODE
+EMON
+ LDD #0
+ STA RECRDG  close buffer
+ LBSR CURS turn off cursor
+ LDD LINCOL
+ PSHS D save old cursor pos
+ CMPA #12
+ BGE ECMD1
+
+*Cursor is in upper half of screen
+ LBSR COPY12 copy upper to lower
+ BRA ECMD2
+
+*Cursor is in lower half of screen
+ECMD1
+ LDD ,S
+ SUBA #12 fudge cursor
+ STD ,S 
+
+ECMD2
+*display buffer on upper half of screen
+ LBSR WIND1
+ LDX #BUF
+ STX WINBUF
+ LBSR CLS
+ LBSR REFRES
+ LDA $FFB0
+ CMPA $FFB2
+ BNE A@
+ LBSR VULINE underline
+A@
+
+*put cursor back on lower half
+ LBSR WIND2
+ PULS D
+ STD LINCOL re-establish cursor pos
+ LBSR CURS turn cursor back on
+ TST COMODE
+ LBEQ XECMD
+ LDB #COATTR fix co line
+ LBSR CLRCO
+ LBRA XECMD
+
+*TURN OFF E MODE
+EMOFF
+ LBSR CURS turn off cursor
+ LDD LINCOL
+ PSHS D save old cursor pos
+ LBSR COPY21 copy lower to upper
+ LBSR CLS clear lower half
+ LBSR WIND0 back to full screen
+ PULS D re-stablish cursor pos
+ STD LINCOL
+ LBSR CURS turn cursor back on
+ LDX #BUF
+ STX WINBUF
+
+XECMD
+ RTS
+
+* D - XMODEM download
+DCMD
+ CMPA #'D
+ BNE XCMDD
+ LBSR XMPRT
+ FCB 13
+ FCC "XMODEM DOWNLOAD TO DISK FILE"
+ FCB 13
+ FCB 0
+* get filename
+ LBSR GETFN
+* erase marks
+ LDD #0
+ STD BMARK
+ STD EMARK
+* set 8bit mode
+ LDA #$FF
+ STA MASK
+* receive XMODEM to disk
+ LBSR XMRECV
+* reset 7bit mode
+ LDA #$7F
+ STA MASK
+* XMODEM completion alarm
+ LBSR ALARM
+XCMDD
+ RTS
+
+* U - XMODEM upload
+UCMD
+ CMPA #'U
+ BNE XCMDU
+ LBSR XMPRT
+ FCB 13
+ FCC "XMODEM UPLOAD FROM DISK FILE"
+ FCB 13
+ FCB 0
+* get filename
+ LBSR GETFN
+* erase marks
+ LDD #0
+ STD BMARK
+ STD EMARK
+* set 8bit mode
+ LDA #$FF
+ STA MASK
+* upload from disk
+ LBSR XMSEND
+* set 7bit mode
+ LDA #$7F
+ STA MASK
+* XMODEM completion alarm
+ LBSR ALARM
+XCMDU
+ RTS
+
+* ALT 0 through ALT 9
+CMD0
+ CMPA #'0
+ BLO XCMD0
+ CMPA #'9
+ BHI XCMD0
+ LDB #CR
+ STD LINE
+ LDX #LINE
+ INC SCRIPT
+ LBSR XMTSEQ
+ CLR SCRIPT
+XCMD0
+ RTS
+
+* H - HELP
+HCMD
+ CMPA #'H
+ BNE XHCMD
+ INC AUTOLF
+ LEAX TXHELP,PCR
+ LBSR MSG
+ DEC AUTOLF
+XHCMD
+ RTS
+
+* R - READ FROM DISK
+RCMD
+ CMPA #'R
+ BNE XRCMD
+ LDD #0
+ STD BMARK erase marks
+ STD EMARK
+ LBSR XMPRT
+ FCB 13
+ FCC "READ BUFFER FROM DISK"
+ FCB 13
+ FCB 0
+ LBSR GETFN
+ LDY #BUF
+ LDD SZBUF
+ LBSR DLOAD
+ STD BUFCNT
+ TST VMODE
+ BEQ XRCMD
+ LDX #BUF
+ STX WINBUF
+ LBSR REFRES update view window
+XRCMD
+ RTS
+
+* T - test
+TCMD
+ RTS
+ CMPA #'T
+ LBNE XTCMD
+ LDD #0
+ STD BMARK erase marks
+ STD EMARK
+ LBSR XMPRT
+ FCB 13
+ FCC "DSKCON read sector loop at "
+ FCB 0
+ LEAX BD881,PCR
+ TFR X,D
+ LBSR HEX
+ LBSR XMPRT
+ FCB 13
+ FCB 0
+ LBSR GETFN
+A@
+ LDX #LINE
+ LDY #BUF
+ LDD SZBUF
+ LBSR DLOAD
+ STD BUFCNT
+ LDX #BUF
+ STX WINBUF
+ LBSR REFRES update view window
+ LBSR BRKCK
+ BNE A@
+XTCMD
+ RTS
+
+* N - ERASE DISK FILE
+NCMD
+ CMPA #'N
+ BNE XNCMD
+ LBSR XMPRT
+ FCB 13
+ FCC "ERASE DISK FILE"
+ FCB 13
+ FCB 0
+ LBSR GETFN
+ LDA ,X
+ BEQ XNCMD
+ CMPA #13
+ BEQ XNCMD
+ LBSR XFNAM
+ LBSR RMFILE
+XNCMD
+ RTS
+
+* L - LIST MACROS
+LCMD
+ CMPA #'L
+ BNE XLCMD
+ LBSR MAP1
+ LBSR XMPRT
+ FCB 13
+ FCC "AVAILABLE MACROS:"
+ FCB 13
+ FCB 0
+ INC AUTOLF
+ LDA #CR
+ LBSR PUT
+ LDX #BUF
+ LDY MACCNT
+ LDB #'&
+ LEAY 1,Y
+* Scan for macro name
+LCMD0
+ LEAY -1,Y
+ BEQ LCMD3
+ CMPB ,X+
+ BNE LCMD0
+* Display macro name
+LCMD1
+ LEAY -1,Y
+ BEQ LCMD3
+ LDA ,X+
+ CMPA #CR
+ BEQ LCMD2
+ CMPA #'&
+ BEQ LCMD0
+ LBSR PUT
+ BRA LCMD1
+* End of macro name
+LCMD2
+ LBSR CURS turn off cursor
+ LDA COL advance cursor
+ ADDA #16
+ ANDA #$F0
+ STA COL
+ LBSR XYFIX
+ LBSR CURS turn on cursor
+ BRA LCMD0
+* End of macro buffer
+LCMD3
+ LDA #CR
+ LBSR PUT
+ DEC AUTOLF
+ LBSR MAP0
+XLCMD
+ RTS
+
+* W - WRITE TO DISK
+WCMD
+ CMPA #'W
+ BNE XWCMD
+ LBSR XMPRT
+ FCB 13
+ FCC "WRITE BUFFER TO DISK"
+ FCB 13
+ FCB 0
+ LBSR GETFN
+ PSHS X
+ LBSR GETBUF
+ TFR X,Y
+ PULS X
+ LBSR DSAVE
+XWCMD
+ RTS
+
+* O - Open/close buffer
+OCMD
+ CMPA #'O
+ BNE XOCMD
+ LEAX ROFF,PCR "off"
+ LDA #$C0 blinking underline
+ COM RECRDG
+ BEQ OCMD1
+ LDA #$80+CATTR blinking block cursor
+ LEAX RON,PCR "on"
+ TST VMODE
+ BEQ OCMD1
+ PSHS A,X
+ LDX #BUF
+ STX WINBUF
+ LBSR REFRES
+ PULS A,X
+OCMD1
+ LBSR CURS
+ STA CUATTR change cursor
+ LBSR CURS
+ LBSR MSG
+XOCMD
+ RTS
+
+* B - XMIT BUFFER
+BCMD
+ CMPA #'B
+ BNE XBCMD
+ LBSR XBUF
+XBCMD
+ RTS
+
+* S - SEND MACRO
+SCMD
+ CMPA #'S
+ BNE XSCMD
+ LBSR SNDSEQ
+XSCMD
+ RTS
+
+* P - Print buffer/block
+PCMD
+ CMPA #'P
+ LBNE XPCMD
+
+ LDD BUFCNT
+ BNE PCMD1
+
+PCMD0
+ LBSR XMPRT
+ FCC "BUFFER EMPTY"
+ FCB 13
+ FCB 0
+ LBRA XPCMD
+
+PCMD1
+ LDD PRLEN
+ BEQ PCMD2
+
+ LDD #0
+ STD PRLEN
+
+*restore bitbanger comm rate
+ LDB BBAUD
+ LEAU BDTABB,PCR
+ CLRA
+ LSLB
+ LDD D,U
+ ADDD TUNE
+ STB $FF95
+ STA $FF94
+A@
+ LBSR INITXR
+
+ LBSR XMPRT
+ FCC "PRINTER ABORTED"
+ FCB 13
+ FCB 0
+ BRA XPCMD
+
+PCMD2
+ LDA $FF22
+ ANDA #1
+ TSTA
+ BEQ PCMD3
+ LBSR XMPRT
+ FCC "PRINTER NOT READY"
+ FCB 13
+ FCB 0
+ BRA XPCMD
+
+PCMD3
+ LBSR GETBUF
+ CMPD #0
+ BEQ PCMD0
+ STX PRPTR
+ ADDD #1 don't miss last CR
+
+*set bitbanger printer rate
+ PSHS D
+ LDB PBAUD
+ LEAU BDTABP,PCR
+ CLRA
+ LSLB
+ LDD D,U
+ ADDD TUNE
+ STB $FF95
+ STA $FF94
+A@
+ LBSR INITXR
+ PULS D
+ STD PRLEN
+
+ LBSR XMPRT
+ FCC "PRINTER STARTED"
+ FCB 13
+ FCB 0
+
+XPCMD
+ RTS
+
+* X - Quit DELPHIterm
+XCMD
+ CMPA #'X
+ BNE X@
+ ORCC #$50 interrupts off
+ LBSR INIMMU re-init MMU
+ CLR $71 force cold boot
+ CLR $FFDE switch on ROMs
+ CLR $FFD8 slow speed
+ LDA #$60  task 0
+ STA $FF91
+ FCB $3E reset
+X@
+ RTS
+
+* C - TOGGLE COTERM MODE
+CCMD
+ CMPA #'C
+ BNE XCCMD
+ LDB #COATTR
+ COM COMODE
+ BNE CCMD1
+ LDB #ATTR
+CCMD1
+ LBSR CLRCO
+XCCMD
+ RTS
+
+RON FCB 13,10
+ FCC "BUFFER OPEN"
+ FCB 13,10
+ FCB 0
+ROFF FCC "BUFFER CLOSED"
+ FCB 13,10
+ FCB 0
+TITL80
+ FCC "DELPHIterm 4.1 - (C) Copyright 1991 Rick Adams - All Rights Reserved"
+ FCB 13,10
+ FCC "Press ALT-H for help"
+ FCB 13,10
+ FCB 13,10
+ FCB 0
+TITL40
+ FCC "           DELPHIterm 4.1"
+ FCB 13,10
+ FCC "   (C) Copyright 1991 Rick Adams"
+ FCB 13,10
+ FCC "         All Rights Reserved"
+ FCB 13,10
+ FCB 13,10
+ FCC "Press ALT-H for help"
+ FCB 13,10
+ FCB 0
+TXHELP
+ FCB $0C
+ FCC "Hold ALT key and press:"
+ FCB 13
+ FCC "  H - Help"
+ FCB 13
+
+ FCC "  F - List available files"
+ FCB 13
+
+ FCC "  R - Read buffer from disk"
+ FCB 13
+
+ FCC "  W - Write buffer/block to disk"
+ FCB 13
+
+ FCC "  M - Mark begin/end of block"
+ FCB 13
+
+ FCC "  O - Open/close buffer"
+ FCB 13
+
+ FCC "  B - Send buffer/block"
+ FCB 13
+
+ FCC "  K - Kill buffer contents"
+ FCB 13
+
+ FCC "  S - Send macro"
+ FCB 13
+
+ FCC "  P - Print buffer/block"
+ FCB 13
+
+ FCC "  C - Conference mode on/off"
+ FCB 13
+
+ FCC "  L - List available macros"
+ FCB 13
+
+ FCC "  D - XMODEM download to disk"
+ FCB 13
+
+ FCC "  U - XMODEM upload from disk"
+ FCB 13
+
+ FCC "  E - Buffer entry mode on/off"
+ FCB 13
+
+ FCC "  V - Buffer view mode on/off"
+ FCB 13
+
+ FCC "  A - Turn alarm on/off"
+ FCB 13
+
+ FCC "  Z - Transmit true line break"
+ FCB 13
+
+ FCC "  ENTER - Toggle auto linefeed"
+ FCB 13
+
+ FCC "  F1 - Toggle RS232 pak baudrate"
+ FCB 13
+
+ FCC "  F2 - Toggle serial port baudrate"
+ FCB 13
+
+ FCC "  X - Quit DELPHIterm"
+ FCB 13
+ FCB 0
+
+* Baudrate table - RS232 Pak
+BDTABR
+ FCB 6      300 baud
+ FCB 8     1200 baud
+ FCB 10    2400 baud
+* Baudrate table - bitbanger
+BDTABB
+ FDB $0BA6 300 baud
+ FDB $02E9 1200 baud
+ FDB $0174 2400 baud
+* Baudrate table - printer
+BDTABP
+ FDB 11931  300 baud
+ FDB 5965   600 baud
+ FDB 2982  1200 baud
+ FDB 1491  2400 baud
+ FDB 745   4800 baud
+ FDB 372   9600 baud
+ FDB 186  19200 baud
+
+* Establish window #0
+WIND0
+ PSHS A,X
+ LDX #VIDBUF
+ STX SCREEN
+ LDA #24
+ STA LMAX
+ PULS A,X,PC
+
+* Establish window #1
+WIND1
+ PSHS A,X
+ LDX #VIDBUF
+ STX SCREEN
+ LDA #12
+ STA LMAX
+ PULS A,X,PC
+
+* Establish window #2
+WIND2
+ PSHS D,X
+ LDX #VIDBUF
+ LDA #12*2
+ LDB CMAX
+ MUL
+ LEAX D,X
+ STX SCREEN
+ LDA #12
+ STA LMAX
+ PULS D,X,PC
+
+*-----------------------------
+*DISPLAY SEQUENCE (NOT USED)
+DISSEQ
+*LEAX TXPT,PCR
+*LBSR MSG
+*LBSR GETLIN
+*LDA ,X
+*CMPA #CR
+*LBEQ DISBUF
+*INC AUTOLF
+*LDA #'&
+*LDU #BUF
+*LDY BUFCNT
+*BEQ NOFND
+DISLP0
+*CMPA ,U+
+*BNE DISNXT
+*LEAY -1,Y
+*BEQ NOFND
+DISLP1
+*LDB ,X+
+*CMPB ,U+
+*BNE DISNXT
+*LEAY -1,Y
+*BEQ NOFND
+*CMPB #CR
+*BEQ DISIT
+*BRA DISLP1
+
+DISNXT
+*LDX #LINE
+*LEAY -1,Y
+*BNE DISLP0
+
+NOFND
+*DEC AUTOLF
+*LEAX TXNF2,PCR
+*LBSR MSG
+*RTS
+
+DISIT
+DISIT1
+ LDA ,U+
+ CMPA #'&'
+ BEQ DIS9
+ LEAY -1,Y
+ BEQ DIS9
+ LBSR PUT
+ LBSR BRKCK check for break
+ BEQ DIS9
+ BRA DISIT1
+
+DIS9
+ DEC AUTOLF
+ RTS
+*-----------------------------
+*SEND SEQUENCE
+SNDSEQ
+ LEAX TXPT,PCR
+ LBSR MSG
+ LBSR GETLIN
+ LDA ,X
+ CMPA #CR
+ BEQ NOTFND
+XMTSEQ
+ LBSR MAP1
+ LDA #'&'
+ LDU #BUF
+ LDY MACCNT
+ BEQ NOTFND
+FNDLP0
+ CMPA ,U+
+ BNE FNDNXT
+ LEAY -1,Y
+ BEQ NOTFND
+FNDLP1
+ LDB ,X+
+ CMPB ,U+
+ BNE FNDNXT
+ LEAY -1,Y
+ BEQ NOTFND
+ CMPB #CR
+ BEQ SNDIT
+ BRA FNDLP1
+
+FNDNXT
+ LDX #LINE
+ LEAY -1,Y
+ BNE FNDLP0
+
+NOTFND
+ LEAX TXNF,PCR
+ LBSR MSG
+ LBRA SND9
+
+SNDIT
+SNDIT1
+ LDA ,U+
+ CMPA #'&'
+ LBEQ SND9
+ LEAY -1,Y
+ LBEQ SND9
+ LBSR BRKCK check for break
+ LBEQ SND9
+
+*** wait for response ***
+
+ TST SCRIPT scripting turned on?
+ LBEQ NOWAI
+ CMPA #'^'  starts with caret?
+ BNE SCPT
+
+* insert command in keyboard buffer
+ LEAY -1,Y
+ LBEQ SND9
+ LDA ,U+
+ ORA #$80
+ LBSR KEYINS first char is ALT char
+KILP
+ LEAY -1,Y
+ LBEQ SND9
+ LDA ,U+
+ CMPA #'^' ending caret?
+ BEQ XSCPT
+ LBSR KEYINS insert rest of command
+ BRA KILP
+XSCPT
+ LBSR GET
+ LDB #$60 force map 0
+ STB $FF91
+ LBSR DOCMD
+ LBSR REMAP force previous map
+ LDA ,U+
+ LEAY -1,Y
+ BEQ SND9
+
+SCPT
+ CMPA #'~'  starts with tilde?
+ BNE NOWAI
+
+ TFR U,X
+L0
+ LDA ,X
+ CMPA #'~'  ending tilde?
+ BEQ DNWAI
+L1
+ PSHS U
+L2
+ LBSR BRKCK
+ BEQ ABSCR
+ LBSR XR    keep up i/o
+ LBSR RECV  wait for character
+ BEQ L2
+ LBSR PUT   echo it
+ ANDA #$7F
+ CMPA #32 dont take any control chars
+ BHS A@   except CR and LF
+ CMPA #CR
+ BRA A@
+ CMPA #LF
+ BNE L2
+A@
+ CMPA #LF if LF
+ BNE B@
+*LDA #CR  change to CR
+B@
+ PULS U
+ CMPA ,X    the one we want?
+ BNE NMWAI
+ LEAX 1,X   yes, skip to next one
+ BRA L0
+NMWAI
+ TFR U,X    no, start over
+ BRA L0
+DNWAI
+ LEAU 1,X
+ CLRA
+ CLRB
+DLAY
+ SUBD #1
+ BNE DLAY
+ LBRA SNDIT1
+NOWAI
+
+* end of new code
+ LBSR SEND
+ LBRA SNDIT1
+
+ABSCR
+ PULS U
+ LBSR XMPRT
+ FCC "MACRO SCRIPT ABORTED"
+ FCB 13
+ FCB 0
+
+SND9
+ LBSR MAP0
+ RTS
+
+KEYINS
+ PSHS B,X
+ LDB KBPUT
+ LDX #KEYBUF
+ ABX
+ STA ,X
+ INCB
+ STB KBPUT
+ PULS B,X,PC
+
+TXPT FCB 13,10
+ FCC "MACRO NAME: "
+ FCB 0
+TXNF2
+TXNF FCB 13,10
+ FCC "MACRO NOT FOUND"
+ FCB 13,10
+ FCB 0
+*-----------------------------
+*TRANSMIT BUFFER
+*
+XBUF
+ LBSR GETBUF
+ CMPD #0
+ BEQ XB9
+ TFR D,Y
+XB1
+ LDA ,X+
+ TST EMODE dont break in E mode
+ BNE XB2
+ LBSR BRKCK check for break
+ BEQ XB9
+XB2
+ LBSR SEND
+ LEAY -1,Y
+ BNE XB1
+XB9
+ RTS
+*-----------------------------
+*DISPLAY BUFFER
+*
+DISBUF
+ INC AUTOLF
+ LDY BUFCNT
+ BEQ DB9
+ LDX #BUF
+DB1
+ LDA ,X+
+ LBSR BRKCK check for break
+ BEQ DB9
+ LBSR PUT
+ LEAY -1,Y
+ BNE DB1
+DB9
+ DEC AUTOLF
+ RTS
+*-----------------------------
+*GET FILENAME
+*
+GETFN
+ LEAX TXFN,PCR
+ LBSR MSG
+GETLIN
+ LDA COMODE turn off c mode
+ PSHS A     temporarily
+ CLR SCFIX
+ COM SCFIX
+ CLR COMODE
+ LDX #LINE
+GETLP
+ LBSR GET
+ CMPA #'a'
+ BLO NOTLC
+ CMPA #'z'
+ BHI NOTLC
+ ADDA #'A-'a
+NOTLC
+ CMPA #BS
+ BNE GETLP1
+ CMPX #LINE
+ BEQ GETLP
+ LBSR BSB
+ LEAX -1,X
+ BRA GETLP
+GETLP1
+ STA ,X+
+ LBSR PUT
+ CMPA #CR
+ BNE GETLP
+ LDA #LF
+ LBSR PUT
+ PULS B
+ STB COMODE restore c mode
+ CLR SCFIX
+ LDX #LINE
+ RTS
+
+* ECHO BACKSPACE - SPACE - BACKSPACE
+BSB
+ PSHS D,X,Y,U
+ LDA #BS
+ LBSR PUT
+ LDA #BLANK
+ LBSR PUT
+ LDA #BS
+ LBSR PUT
+ PULS D,X,Y,U
+ RTS
+
+TXFN FCB 13,10
+ FCC "Filename: "
+ FCB 0
+*-----------------------------
+*SEND CHARACTER TO SERIAL PORT
+*  (VIA OUTBUF)
+* ENTER W/ CHAR IN A REG
+*
+SEND
+ PSHS D,X,Y,U
+
+ TST MASK if 8-bit mode
+ BLT SND2 don't echo input
+
+SND1
+ LBSR RECV
+ BEQ SND2   ALWAYS MONITOR RCV
+ LBSR PUT   AND PRINT IT
+ BRA SND1
+
+SND2
+ ORCC #$50      IRUPTS OFF FOR NOW
+ LDB OCNT
+ CMPB #SZOUT
+ BEQ SND1
+
+ INC OCNT
+ LDA ,S
+ LDX PUTOUT
+ STA ,X+  PUT CHAR IN BUFFER
+ CMPX #OUTBUF+SZOUT
+ BNE SND3
+ LDX #OUTBUF
+SND3
+ STX PUTOUT
+ LBSR XR
+ ANDCC #$AF     ENABLE INTERRUPTS
+ PULS D,X,Y,U,PC
+
+*-----------------------------
+* GET CHAR FROM KEYBOARD
+* RETURN W/ CHAR IN A REG
+*
+GET
+ PSHS X,Y,U
+GET1
+ LBSR RECV
+ BEQ GET2   ALWAYS MONITOR RCV
+ LBSR PUT   AND PRINT IT
+ BRA GET1
+GET2
+ LDB KBGET
+ CMPB KBPUT
+ BEQ GET1
+ LDX #KEYBUF
+ ABX
+ INCB
+ STB KBGET
+ LDA ,X
+ TST COMODE echo in co line
+ BEQ GET3
+ TST EMODE but not if E mode!
+ BNE GET3
+ LBSR COPUT
+GET3
+ PULS X,Y,U,PC
+*----------
+*LOCAL ROUTINE TO blink CURSOR
+CURS
+ PSHS D,X,Y,U
+ TST CURSON
+ BEQ XCURS
+ LBSR XYCALC
+ LDA 1,X
+ EORA CUATTR
+ STA 1,X
+XCURS
+ PULS D,X,Y,U,PC
+*-----------------------------
+*PUT ERROR MESSAGE
+* X-MESSAGE
+*
+MSG
+PERROR
+ PSHS X
+PERR1
+ LDA ,X+
+ BEQ PERR9
+ LBSR PUT
+ BRA PERR1
+PERR9
+ PULS X,PC
+*-----------------------------
+* PUT CHAR TO SCREEN
+* ENTER W/ CHAR IN A REG
+*
+PUT
+ PSHS D,X,Y,U
+ PSHS A
+ TST SMODE
+ LBEQ PUTCN S mode not on
+ CMPA #LF
+ BNE SMOD1
+
+*if upper window selected, exchange
+* LCOL1 <-> LINCOL
+ TST SINDX
+ BLE SMOD0
+ LDX LINCOL
+ LDY LCOL1
+ STX LCOL1
+ STY LINCOL
+SMOD0
+ CLR SINDX  LF - deselect window
+ LBRA PUTCN
+SMOD1
+ TST SINDX
+ BLT PUTCN  lower window selected
+ LDX #KEY
+ LDB SINDX
+ LDA B,X
+ CMPA #CR
+ LBEQ PUTCN upper window selected
+ CMPA ,S
+ BNE SMOD2
+ INCB       key matched so far
+ STB SINDX
+ PULS A
+ LDA B,X
+ CMPA #CR   entire key matched?
+ LBNE XPUT
+ LBSR WIND1 key match,select upper win
+ LDX LINCOL
+ LDY LCOL1
+ STY LINCOL
+ STX LCOL1
+ LBRA XPUT
+SMOD2
+ LBSR WIND2 key mismatch, select lower
+ LDA #$FF
+ STA SINDX
+ 
+PUTCN
+ PULS A
+ TST FLOW
+ BEQ PUTUNL
+PUTLOK
+ TST XLOCK transmit locked
+ BEQ PUTUNL due to XOFF?
+ LBSR XR
+ BRA PUTLOK
+PUTUNL
+ LBSR CURS turn off cursor
+* Convert up and left arrow
+* to carat and underscore
+ CMPA #$60
+ BNE A@
+ LDA #$9E fix backquote
+ STA ,S
+A@
+ CMPA #$5E
+ BNE NOTUP
+ LDA #$60
+ STA ,S
+NOTUP
+ CMPA #$5F
+ BNE NOTLF
+ LDA #$7F
+ STA ,S
+NOTLF
+
+ CMPA #32
+ BHS PUTPR
+
+*TEST FOR CONTROL CHARACTER
+ CMPA #CR
+ BEQ PUT1
+ CMPA #LF
+ BEQ PUT2
+ CMPA #BS
+ BEQ PUTBS
+ CMPA #FF
+ BEQ PUTFF
+ CMPA #CTLG
+ BEQ BELL
+ CMPA #CTLY
+ BNE PUT9
+
+*CURSOR UP
+ DEC LIN
+ BRA PUT8
+
+*BEEP
+BELL
+ LBSR BEEP
+ BRA PUT8
+
+*FORM FEED
+PUTFF
+ LBSR CLS
+ LBSR FIXCO
+ BRA PUT8
+
+*BACK SPACE
+PUTBS
+ DEC COL
+ BRA PUT8
+
+*CARRIAGE RETURN
+PUT1
+ LDB LFMAR
+ STB COL
+ TST AUTOLF
+ BEQ PUT8
+
+*LINE FEED
+PUT2
+ INC LIN
+ BRA PUT8
+
+*PRINTABLE CHARACTER
+PUTPR
+ LBSR XYCALC (CALC SCREEN LOC)
+ LDA ,S
+ STA ,X      (STORE CHARACTER)
+ INC COL
+
+*
+*FIX X-Y LOC
+PUT8
+ BSR XYFIX
+PUT9
+ LBSR CURS
+XPUT
+ PULS D,X,Y,U,PC
+*-----------------------------
+* PUT CHAR TO CO-SCREEN
+* ENTER W/ CHAR IN A REG
+*
+COPUT
+ PSHS A,X,Y
+ TSTA
+ BMI COPUT9
+ CMPA #32
+ BHS COPUT2
+
+*TEST FOR CONTROL CHARACTER
+ CMPA #CR
+ BEQ COPUT1
+ CMPA #LF
+ BEQ COPUT1
+ CMPA #BS
+ BNE COPUT9
+
+*BACK SPACE
+ TST CCOL
+ BEQ COPUT9
+ DEC CCOL
+ LDX SCREEN
+ LDB CCOL
+ LSLB
+ ABX
+ LDB #BLANK
+ STB ,X
+ BRA COPUT9
+
+*CARRIAGE RETURN, LINE FEED
+COPUT1
+*LDB #COATTR
+*LBSR CLRCO
+ BRA COPUT9
+
+*PRINTABLE CHARACTER
+COPUT2
+ LDX SCREEN
+ LDB CCOL
+ CMPB CMAX
+ BEQ COPUT9
+ LSLB
+ ABX
+ STA ,X      (STORE CHARACTER)
+ INC CCOL
+COPUT9
+ PULS A,X,Y,PC
+*-----------------------------
+*CLEAR CO-TERM LINE
+*   (B=ATTR)
+*
+CLRCO
+ LDX SCREEN
+ LDA CMAX
+ PSHS A
+ LDA #BLANK
+CLC1
+ STD ,X++
+ DEC ,S
+ BNE CLC1
+ CLR CCOL
+ PULS B,PC
+*-----------------------------
+* BRING LINE/COL IN VALID RANGE
+*
+XYFIX
+ PSHS D,X,Y
+XY1
+ LDD LINCOL
+ CMPB CMAX
+ BHS HICOL
+ CMPB LFMAR
+ BLO LOCOL
+ CMPA LMAX
+ BHS HILIN
+ BRA XY9
+
+* COLUMN TOO HIGH,
+* GO TO NEXT LINE
+HICOL
+ LDB LFMAR
+ STB COL
+ INC LIN
+ BRA XY1
+
+* COLUMN TOO LOW,
+* GO TO PREV LINE
+LOCOL
+ LDB LFMAR
+ STB COL
+ BRA XY1
+
+* LINE TOO HIGH
+* SCROLL
+HILIN
+ LBSR SCROLL
+ DEC LIN
+ BRA XY1
+
+XY9
+ PULS D,X,Y,PC
+
+*-----------------------------
+* CALCULATE X/Y SCREEN LOC
+* ENTRY LINE/COL
+* EXIT   X-SCREEN LOC
+*
+XYCALC
+ LDX SCREEN
+ LDA LIN
+ LDB CMAX
+ LSLB (ACCOUNT FOR ATTRIBUTE BYTE)
+ MUL
+ LEAX D,X
+ LDB COL
+ LSLB (ACCOUNT FOR ATTRIBUTE BYTE)
+ ABX
+ RTS
+*-----------------------------
+*SCROLL SCREEN UP ONE LINE
+*
+SCROLL
+ LDX SCREEN
+ LDB CMAX
+ LSLB (ACCOUNT FOR ATTRIBUTE BYTE)
+ CLRA
+ LEAU D,X
+ LDB LMAX
+ DECB
+ TST SCFIX
+ BNE SCR0
+ TST COMODE
+ BEQ SCR1
+SCR0
+ CLRA
+ LDB CMAX
+ LSLB
+ LEAX D,X
+ LEAU D,U
+ LDB LMAX
+ DECB
+ DECB
+SCR1
+ PSHS D
+SCR2
+ LDA CMAX
+ LSRA
+ LSRA
+ LSRA
+ STA ,S
+SCR3
+ LDB ,U++
+ STB ,X++
+ LDB ,U++
+ STB ,X++
+ LDB ,U++
+ STB ,X++
+ LDB ,U++
+ STB ,X++
+ LDB ,U++
+ STB ,X++
+ LDB ,U++
+ STB ,X++
+ LDB ,U++
+ STB ,X++
+ LDB ,U++
+ STB ,X++
+ DEC ,S
+ BNE SCR3
+ PSHS X,U
+ ORCC #$50      IRUPTS OFF FOR NOW
+ LBSR XR (MONITOR DURING SCROLL)
+ ANDCC #$AF     ENABLE INTERRUPTS
+ PULS X,U
+ DEC 1,S
+ BNE SCR2
+ PULS D
+*Clear line at bottom
+ LDA CMAX
+ LDB #BLANK
+SCR4
+ STB ,X++
+ STB ,X++
+ STB ,X++
+ STB ,X++
+ STB ,X++
+ STB ,X++
+ STB ,X++
+ STB ,X++
+ DECA
+ BNE SCR4
+ RTS
+*-----------------------------
+* CLEAR SCREEN
+*
+CLRSCN
+ LDB FCOLOR SET FOREGROUND COLOR
+ STB $FFB8
+ STB $FFB3
+ LDB BCOLOR SET BACKGROUND COLOR
+ STB $FFB0
+ STB $FFBB
+ STB $FF9A  AND BORDER
+ LDB COBACK
+ STB $FFB1 co-line bg color
+ LDB COFORE
+ STB $FFB9 co-line fg color
+ LDB WBACK
+ STB $FFB2 2nd window bg color
+ STB $FFBC
+ LDB WFORE
+ STB $FFBA 2nd window fg color
+ STB $FFB4
+ LDB #$60
+ STB $FF91 MMU task 0
+*LDB #$0C  don't enable mmu
+ LDB #$4C  enable MMU
+ STB $FF90 SET INITIALIZATION REGISTER
+ LDB #3
+ STB $FF98 SET VIDEO MODE REGISTER
+ LDB #$5
+ LDA CMAX
+ CMPA #80
+ BNE CL1
+ LDB #$15
+CL1
+ STB $FF99  SET VIDEO RES REGISTER
+ LDD SCREEN
+ LSRA
+ RORB
+ LSRA
+ RORB
+ LSRA
+ RORB
+ ORA #$E0
+ STA $FF9D  SET VERT OFFSET REGISTERS
+ STB $FF9E
+ CLR $FF9F
+
+CLS
+ LDX SCREEN
+ LDA CMAX
+ LDB LMAX
+ MUL
+ TFR D,Y length of screen
+ LDD #BLANK*256+ATTR
+CL2
+ STD ,X++ clear char, plus attr
+ STD ,X++
+ STD ,X++
+ STD ,X++
+ LBSR XR ...keep up RS232...
+ STD ,X++
+ STD ,X++
+ STD ,X++
+ STD ,X++ ...8 of em
+ LEAY -8,Y
+ BNE CL2
+ CLR LIN
+ TST COMODE
+ BEQ CL3
+ INC LIN
+CL3
+ LDB LFMAR
+ STB COL
+* Clear co line too
+*TST COMODE
+*BEQ A@
+*LDB #COATTR
+*LBSR CLRCO
+A@
+ RTS
+
+*INTERRUPT PROCESSOR
+DOIRQ
+ LDA $FF03
+ BPL DOIRQ9
+ LBSR SCAN
+ LBSR XR
+ LDA $FF02  CLEAR CLOCK IRUPT
+DOIRQ9
+ RTI
+
+*BLEEP TERMINAL
+*
+* DON HUTCHISON
+*
+* BUG FIX BY AJACK
+*
+BEEP
+ PSHS D,X
+
+* program single bit sound bit
+* for output
+ LDA $FF23
+ ANDA #$FB
+ STA $FF23
+ LDA #$FA
+ STA $FF22
+ LDA $FF23
+ ANDA #$04
+ STA $FF23
+
+ LDD #$34FA (was $33FA)
+ STA $FF23
+ STB $FF22
+ LDA #$34 (was $37)
+ STA $FF23
+
+* enable one-bit sound
+ LDA $FF23
+ ANDA #$F7
+ STA $FF23
+
+ LDA #$60
+A@ LDB $FF22
+ EORB #2
+ STB $FF22
+ LDX #32
+B@ LEAX -1,X
+ BNE B@
+ LBSR XR
+ DECA
+ BNE A@
+
+* disable one-bit sound
+ LDA $FF23
+ ORA #$08
+ STA $FF23
+
+ PULS D,X,PC
+
+* Refresh view window
+REFRES
+ TST SMODE
+ BEQ A@
+ RTS
+A@
+ LDA #12 load line counter
+ PSHS A
+ LDU #VIDBUF init vid pointer
+ LDD BUFCNT init character counter
+ BEQ RFEXIT
+ SUBD WINBUF
+ ADDD #BUF
+ TFR D,Y
+ LEAY 1,Y
+ LDB CMAX load col counter
+ LDX WINBUF init text pointer
+
+RF0 TST ,S  while line counter nonzero
+ BEQ RFEXIT
+ LEAY -1,Y decrement character counter
+ BEQ RFEXIT exit if zero
+ LDA ,X+ get char from text buffer
+ CMPA #CR if char is cr
+ BNE RF2
+
+* Carriage return
+
+RFW
+ LDA #BLANK while col counter nonzero
+ TSTB
+ BEQ RF1
+ STA ,U+ put blank
+ LDA #WATTR
+ STA ,U+ window attribute
+ DECB dec col counter
+ LBSR XR keep up i/o
+ BRA RFW
+RF1
+ LDB CMAX reload col counter
+ DEC ,S dec line counter
+ BRA RF0
+
+* Normal character
+
+RF2
+ CMPA #FF don't show FF
+ BEQ RF0
+ CMPA #CTLG don't show BEL
+ BEQ RF0
+ CMPA #$60 convert backquote
+ BNE A@
+ LDA #$9E
+A@
+ CMPA #$5E convert uparrow
+ BNE RFA
+ LDA #$60
+RFA
+ CMPA #$5F convert leftarrow
+ BNE RFB
+ LDA #$7F
+RFB
+ STA ,U+ put char
+ LDA #WATTR
+ STA ,U+ window attribute
+ LBSR XR keep up i/o
+ DECB dec col counter
+ BNE RF0 if col is zero,
+ LDB CMAX reload col counter
+ DEC ,S dec line counter
+ BRA RF0
+
+RFEXIT
+ PULS A
+
+*Clear rest of screen
+ LDX #VIDBUF
+ LDA CMAX
+ LDB #12*2
+ MUL
+ LEAX D,X
+ PSHS X
+ LDA #BLANK
+ LDB #WATTR  window attribute
+ TST EMODE   E-mode on?
+ BEQ RFL
+ LDB #WCATTR attribute for cursor
+RFL
+ CMPU ,S
+ BHS XRFL
+ STD ,U++
+ LDB #WATTR back to window attribute
+ LBSR XR keep up i/o
+ BRA RFL
+
+XRFL
+ LDA $FFB0
+ CMPA $FFB2
+ BNE A@
+ LBSR VULINE
+A@
+ PULS X
+ RTS
+
+*put underline across middle of screen
+VULINE
+ LDX #VIDBUF
+ LDA CMAX
+ LDB #11*2
+ MUL
+ LEAX D,X
+ LDA CMAX
+ PSHS A
+ LDB #$40+WATTR underline
+VCMD3
+ DEC ,S
+ BLT VCMD4
+ LDA ,X
+ STD ,X++
+ BRA VCMD3
+VCMD4
+ PULS A
+ RTS
+
+* Up-arrow (scroll view down)
+UPARW
+ LDX WINBUF
+UPLP
+ CMPX #BUF
+ BLS XUPARW
+ LEAX -1,X
+ LDA -1,X
+ CMPA #CR
+ BNE UPLP
+XUPARW
+ STX WINBUF
+ RTS
+
+* Down-arrow (scroll view up)
+DNARW
+ LDX #BUF
+ LDD BUFCNT
+ LEAX D,X
+ LEAX -1,X
+ PSHS X
+ LDX WINBUF
+*LEAX 1,X
+DNLP
+ CMPX ,S
+ BHS XDNARW
+ LDA ,X+
+ CMPA #CR
+ BNE DNLP
+ STX WINBUF
+XDNARW
+ PULS X,PC
+
+*Return effective address of buffer
+*
+* X: buffer
+* D = length
+*
+GETBUF
+ LDD EMARK
+ SUBD BMARK
+ BLS NOMRKS
+
+*Use marked block
+ LDX BMARK
+ RTS
+
+NOMRKS
+*Use entire buffer
+ LDX #BUF
+ LDD BUFCNT
+ RTS
+
+* XMODEM completion alarm
+ALARM
+ TST AFLAG
+ BEQ X@
+ LBSR XMPRT
+ FCC "PRESS BREAK TO SILENCE ALARM"
+ FCB 13
+ FCB 0
+A@
+ CLRA
+B@
+ LBSR XR
+ LBSR XR
+ LBSR XR
+ LBSR BRKCK
+ BEQ X@
+ LBSR XR
+ LBSR XR
+ LBSR XR
+ LBSR BRKCK
+ BEQ X@
+ DECA
+ BNE B@
+ LBSR BEEP
+ BRA A@
+X@
+ RTS
+
+MAP0
+ PSHS A
+ LDA #$60
+ STA $FF91
+ CLR MAP
+ PULS A,PC
+
+MAP1
+ PSHS A
+ LDA #$61
+ STA $FF91
+ LDA #1
+ STA MAP
+ PULS A,PC
+
+REMAP
+ PSHS A
+ LDA #$60
+ ADDA MAP
+ STA $FF91
+ PULS A,PC
+
+* Init MMU
+INIMMU
+ LEAU MTBL,PCR
+ LDX #$FFA0
+ LDB #8
+ PSHS B
+A@
+ LDD ,U++
+ STA ,X
+ STB 8,X
+ LEAX 1,X
+ DEC ,S
+ BNE A@
+ PULS B,PC
+
+MTBL
+ FCB $38,$38
+ FCB $39,$39
+ FCB $3A,$3A
+ FCB $3B,$30
+ FCB $3C,$31
+ FCB $3D,$32
+ FCB $3E,$33
+ FCB $3F,$34
+
+RLOGON
+ TST ULOGON
+ BEQ XRLOG
+ LDD #0
+ STD BMARK erase marks
+ STD EMARK
+
+ LBSR MAP1
+ LDD LOGON
+ STD LINE
+ LDD LOGON+2
+ STD LINE+2
+ LDD LOGON+4
+ STD LINE+4
+ LDD LOGON+6
+ STD LINE+6
+ LDD LOGON+8
+ STD LINE+8
+ LDD LOGON+10
+ STD LINE+10
+
+ LDX #LINE
+ LDY #BUF
+ LDD SZBUF
+ LBSR DLOAD
+
+ STD MACCNT
+*TST ROMFLG
+*BNE XRLOG
+ LBSR MAP0
+XRLOG
+ RTS
+
+LOGON
+ FCC "MACROS.TXT:0"
+ FCB $0D
+ FCC "XXXXXXXXX"
+
+*XMIT/RECIEVE
+XR
+ PSHS D,X,U
+ PSHS CC
+ TST CARD   is rs232 card there?
+ BEQ NOXX    if not, forget it!
+ ORCC #$10  turn off IRQ only
+ LDU ACIA
+ LDA 1,U  GET ACIA STATUS
+ BITA #$8
+ BEQ NOR
+ LDX PUTIN
+ LDB ,U
+ LDA ICNT
+ CMPA #SZIN
+ BEQ NOR
+ ANDB MASK STRIP OFF PARITY
+ STB ,X+    DELIVER CHAR TO BUFFER
+ CMPB #XOFF lock transmit?
+ BNE XR1
+ TST MASK
+ BLT XR1
+ INC XLOCK
+XR1
+ CMPB #XON unlock transmit?
+ BNE XR2
+ CLR XLOCK
+XR2
+ INC ICNT
+ CMPX #INBUF+SZIN
+ BNE RCI5
+ LDX #INBUF
+RCI5
+ STX PUTIN
+NOR
+ TST XLOCK transmit locked?
+ BNE NOX
+
+ LDA 1,U
+ BITA #$10
+ BEQ NOX
+ LDX GETOUT
+ LDB OCNT
+ BEQ NOX
+ DEC OCNT
+ LDB ,X+     GET NEXT BYTE IN BUFFER
+ STB ,U
+ CMPX #OUTBUF+SZOUT
+ BNE XMI2
+ LDX #OUTBUF
+XMI2
+ STX GETOUT  ADVANCE BUFFER POINTER
+NOX
+*ANDCC #$AF
+NOXX
+ PULS CC
+ PULS D,X,U,PC
+
+*-----------------------------
+*RCV CHARACTER FROM SERIAL PORT
+*  (VIA INBUF)
+* RETURN W/ CHAR IN A REG
+* EQ IF NOTHING RECEIVED
+*
+RECV
+ PSHS X,Y
+ ORCC #$10 turn off IRQ only
+ LBSR XR
+ LDA ICNT
+ BEQ RCV9
+
+ LDX GETIN
+ LDA ,X
+ PSHS A
+ DEC ICNT
+ LEAX 1,X
+ CMPX #INBUF+SZIN
+ BNE RCV2
+ LDX #INBUF
+RCV2
+ STX GETIN
+ ANDCC #$AF      reenable interrupts
+
+*GOT CHAR
+ TST RECRDG      recording?
+ BEQ RCV1
+ CMPA #LF
+ BEQ RCV1        don't record LFs
+ CMPA #XON
+ BEQ RCV1        or XONs
+ CMPA #XOFF
+ BEQ RCV1        or XOFFs
+ CMPA #BS
+ BNE  RCVRC
+
+*record backspace
+ LDD BUFCNT
+ SUBD #1
+ STD BUFCNT
+ BRA RCV1
+
+*RECORD CHARACTER
+RCVRC
+ LDY #BUF
+ LDD BUFCNT
+ CMPD SZBUF
+ BEQ RCV0
+ LEAY D,Y
+ ADDD #1
+ STD BUFCNT
+ LDA ,S
+
+ LDB #$60 force user buffer mmu map
+ STB $FF91
+ STA ,Y char to buffer
+ LBSR REMAP restore previous mmu map
+
+ CMPA #CR
+ BNE RCV1
+ TST VMODE
+ BEQ RCV1
+ LDB #$60 force user buffer mmu map
+ STB $FF91
+ LBSR REFRES update view window
+ LBSR REMAP restore previous mmu map
+ BRA RCV1
+
+RCV0
+ CLR RECRDG turn off recording
+ LBSR CURS
+ LDA #$C0
+ STA CUATTR normal cursor
+ LBSR CURS
+
+RCV1
+ PULS A
+ ANDCC #$FB clear Z status (got char)
+RCV9
+*LBSR REMAP
+ ANDCC #$AF enable interrupts
+*TSTA
+ PULS X,Y,PC
+
+* display hex number in D
+HEX
+ PSHS U,X,Y
+ PSHS D
+ LDB ,S
+ BSR HEXBYT
+ LDB 1,S
+ BSR HEXBYT
+ LDB 2,S
+ PULS D
+ PULS U,X,Y,PC
+
+*display hex byte
+HEXBYT
+ PSHS B
+ LSRB
+ LSRB
+ LSRB
+ LSRB
+ ANDB #$0F
+ BSR HEXDGT
+ LDB ,S
+ ANDB #$0F
+ BSR HEXDGT
+ PULS B,PC
+
+* display hex nibble
+HEXDGT
+ CMPB #9
+ BGT A@
+ ADDB #'0
+ BRA C@
+A@
+ SUBB #10
+ ADDB #'A
+C@
+ TFR B,A
+ LBSR PUT
+ RTS
+
+ INCL xmodem.asm
+ INCL keybd.asm
+ INCL bitbang.asm
+*NOP
+*NOP
+ INCL diskio.asm
+
+XMBUF   RMB 1024+2   XMODEM buffer
+
+BUF EQU $6000
+*BUF
+
+ZPROG
+
+ END
+

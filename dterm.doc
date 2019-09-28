@@ -1,0 +1,349 @@
+
+
+
+DELPHIterm Users Guide         01/17/87            (c) 1987 Rick Adams
+
+                         --- DELPHITERM --- 
+ 
+                Program (c) copyright 1987 Rick Adams 
+                Portions (c) copyright 1987 Dale Lear 
+              Portions (c) copyright 1987 Erik Gavriluk 
+             Documentation (c) copyright 1987 Rick Adams 
+                         All Rights Reserved 
+ 
+ 
+ 
+ 
+DESCRIPTION: 
+ 
+DELPHIterm  (apologies  to Mike Ward) is a data communications package
+that runs on the Tandy Color Computer 3.  A Color Computer 3,  a  disk
+drive,  and  a  modem  are  required  to run DELPHIterm.  A printer, a
+Deluxe RS23 Pak, and a color monitor would be  very  useful,  but  are
+not essential.  
+ 
+DELPHIterm  enables  the user to communicate with another computer via
+modem, and to perform uploading and downloading using either  straight
+ASCII or XMODEM protocols.  
+ 
+Users  with  a  monochrome  or  color  monitor  may  use  DELPHIterm's
+80-column mode.  Others may use DELPHIterm's 40-column mode.  
+ 
+One of DELPHIterm's more unusual features  is  that  it  supports  the
+sending  of "strings", or predefined sequences of text.  These strings
+may be read into the buffer from  disk,  and  then  referred  to,  and
+transmitted, by name.  
+ 
+ 
+PROGRAMS: 
+ 
+You will find the following programs on your DELPHIterm disk: 
+ 
+     DTERM.DOC   DELPHIterm User's Guide 
+     DTERM.BAS   BASIC loader 
+     DTERM.BIN   Machine language portion 
+      
+      
+BASIC LOADER 
+ 
+The  BASIC portion of DELPHIterm sets up various parameters, loads the
+machine language portion of DELPHIterm, and then starts it up.  
+ 
+Take a look at the BASIC program to see which parameters it  sets  up.
+The  comments make things fairly clear.  The foreground and background
+color parameters are especially fun to tinker with.  
+ 
+There are two baudrate settings set up by the  BASIC  loader  program:
+BAUD  and  BBAUD.   BAUD sets up the baud rate for communication using
+the RS232 pak, if it exists.  BBAUD sets the "bitbanger" baudrate  for
+the  serial  port at the back of the Color Computer 3.  If you have an
+RS232 pak, set BBAUD to reflect the baudrate of your printer.  
+ 
+The setting of a user-definable step rate for your  disk  drive(s)  is
+
+
+
+
+
+
+DELPHIterm Users Guide         01/17/87            (c) 1987 Rick Adams
+
+supported.   All drives will work fine with a 30 ms.  step rate.  Most
+newer disk drives will work at faster step rates, with 6  ms.    being
+the fastest possible.  
+ 
+ 
+NOTE: 
+ 
+Numerous  references  to  Delphi are made in this document, due to the
+fact  that  DELPHIterm  was  originally  uploaded  to  that   service.
+DELPHIterm's  author  "hangs out" on Delphi in the CoCo and OS-9 SIGs,
+under the username RICKADAMS.
+ 
+ 
+DELPHITERM COMMANDS: 
+ 
+To invoke one of DELPHIterm's commands, press the ALT key and keep  it
+depressed while typing one of the following letters: 
+ 
+H - Help 
+ 
+This command displays a list of DELPHIterm commands.  
+ 
+C - Conference mode on/off 
+ 
+Use  this  command to enter or to exit conference mode.  In conference
+mode, an inverse video line will appear at  the  top  of  the  screen.
+All  keyboard  input  while in conference mode will appear inside this
+inverse video line.  Input  will  also  be  displayed  in  the  normal
+screen, unless Delphi's "/noecho" conference command is used.  
+ 
+This  mode  is  useful  in  Delphi conference when it may be otherwise
+difficult to see what you are typing due to messages from other  users
+becoming interspersed with your input.  
+ 
+U - XMODEM upload from buffer 
+ 
+This  commands starts an XMODEM protocol transmission from your buffer
+to your workspace on Delphi.  Start  the  XMODEM  upload  sequence  on
+Delphi  first,  via  the  workspace  "xup" command, then use the ALT-U
+command to  start  DELPHIterm's  transfer  of  information  from  your
+buffer to Delphi.  
+ 
+If,  for  some  reason,  you  want to abort the upload sequence, press
+BREAK.  
+ 
+It is assumed that something useful has been loaded  into  the  buffer
+before this command is executed.  
+ 
+D - XMODEM download into buffer 
+ 
+This  command  starts  an XMODEM protocol receive into the buffer from
+Delphi.  Start the XMODEM download sequence on Delphi first,  via  the
+workspace  "xdown"  command,  then  use  the  ALT-D  command  to start
+DELPHIterm's transfer of information from Delphi into your buffer.  
+ 
+After the information has been received, you may write it to disk.  
+
+
+
+
+
+
+DELPHIterm Users Guide         01/17/87            (c) 1987 Rick Adams
+
+ 
+You will need to  go  into  your  workspace  on  Delphi  and  use  the
+SETTINGS   command  to  change  your  line  terminators  to  CR  ONLY.
+Otherwise  your  text  downloads  from  Delphi  will  appear  to    be
+doublespaced,  or  sometimes have a strange character at the beginning
+of each line.  
+ 
+Press BREAK if, for some reason, you would like to abort the  download
+sequence.  
+ 
+R - Read buffer from disk 
+ 
+When  this  command  is executed, DELPHIterm will ask for the filename
+of the file from which the contents of the  buffer  are  to  be  read.
+Enter the filename, with optional extension and drive specification.  
+ 
+The  default  file  extension  is .TXT, and the default drive is drive
+#0.  The filename TEST.BIN:1, for  example,  would  specify  that  the
+file  TEST,  with  a file extension of .BIN, was to be read from drive
+#1. 
+ 
+The filename TEST would specify the file TEST.TXT was to be read  from
+drive  #0,  since  .TXT  is  the default extension and drive #0 is the
+default drive.  
+ 
+W - Write buffer/block to disk 
+ 
+To write the contents  of  the  buffer  to  disk,  use  this  command.
+DELPHIterm  will ask for the filename of the file to which the current
+contents of the buffer are to be written.  Filename defaults, and  the
+specification  of  filename extension and disk drive, are specified as
+for the ALT-R (read buffer from disk) command.  
+ 
+If a block is currently marked in the buffer (see the ALT-M  command),
+that  block  will  be  written.  Otherwise, the entire contents of the
+buffer will be sent.  
+ 
+B - Transmit buffer/block 
+ 
+This command transmits the contents of the buffer to the computer  you
+are  communicating with.  This command can be used to perform straight
+ASCII transfers.  This is the most  straightforward  way  to  transfer
+ASCII  text  when the phone line is not introducing any noise, and the
+transfer is relatively short.  
+ 
+If a block is currently marked in the buffer (see the ALT-M  command),
+that  block  will  be  sent.    Otherwise,  the entire contents of the
+buffer will be sent.  
+ 
+The BREAK key may be used to interrupt the transmission, if desired.  
+ 
+O - Open/close buffer 
+ 
+The first time this command is used,  the  buffer  will  be  "opened".
+This  means  that  all  data  received will be appended to the buffer.
+The message BUFFER OPEN is displayed.  Also, the  cursor  will  change
+from  a  blinking  underline  to  a blinking solid block to remind you
+that your buffer is open and capturing  your  session  on  the  remote
+
+
+
+
+
+
+DELPHIterm Users Guide         01/17/87            (c) 1987 Rick Adams
+
+computer.  
+ 
+If  the  buffer  becomes  full,  the  cursor  will  change  back to an
+underline, and the buffer will be closed.  
+ 
+The second time this command is entered, the buffer  will  be  closed.
+Data  from  the  remote  system  will  no  longer be "captured" in the
+buffer, and the contents of the buffer will be available  for  writing
+to disk, etc.  At this time, the message BUFFER CLOSED is displayed.  
+ 
+Further  use  of  this  command  will  "toggle" back and forth between
+BUFFER OPEN and BUFFER CLOSED.  
+ 
+S - Send string 
+ 
+To send one of your "strings" to Delphi, as found in the  buffer,  use
+this  command.    DELPHIterm  will ask you for the name of the string,
+and then send it.  Use BREAK to abort the sending of  the  string,  if
+desired.    The  subject of strings is covered in detail later in this
+user guide.  
+ 
+P - Print buffer/block 
+ 
+This command causes your printer (if you have one) to  begin  printing
+the current contents of the buffer.  
+ 
+If  a block is currently marked in the buffer (see the ALT-M command),
+that block will be printed.  Otherwise, the  entire  contents  of  the
+buffer will be sent.  
+ 
+Pressing  ALT-P again while the printer is active will abort printing,
+if desired.  
+ 
+Only the current contents of the buffer or block at the  time  of  the
+ALT-P  command will be printed.  Any further text that may be added to
+the buffer in the meantime will not be printed.  
+ 
+L - List available strings 
+ 
+This command lists all available strings that  may  be  found  in  the
+buffer.  
+ 
+F - List available files 
+ 
+This  command  will ask for a drive number.  Enter the drive number of
+the disk drive for which you wish a list of available files,  followed
+by a RETURN.  
+ 
+Z - Send line break 
+ 
+The  ALT-Z command causes a true line break to be sent.  The ALT-BREAK
+key sequence also invokes this command.  
+ 
+A line break is useful for those users accessing Delphi  via  TELENET.
+It  performs  the  same  function  as control-O ("output off"), but is
+much faster.  
+ 
+Line  break  is  sometimes  used  to  perform  some  attention-getting
+
+
+
+
+
+
+DELPHIterm Users Guide         01/17/87            (c) 1987 Rick Adams
+
+function on other systems.  
+ 
+K - Kill buffer 
+ 
+This  command  clears the entire contents of the buffer.  All previous
+contents of the buffer WILL BE LOST if this command is entered.    The
+words "BUFFER CLEARED" are displayed.  
+ 
+V - Enter buffer view mode 
+ 
+Upon  entering buffer view mode, the screen splits into an upper and a
+lower window.  
+ 
+Communications continues normally  in  the  lower  window,  while  the
+upper window displays the contents of the buffer.  
+ 
+The  up  and  down  arrows  may be used at this point to scroll up and
+down in the buffer in the upper window.  Alphabetic keys, etc, may  at
+the same time be used to communicate in the lower window.  
+ 
+Shift  down-arrow and shift up-arrow may be used to scroll up and down
+in the buffer a screen at a  time.    This  provides  quick  scrolling
+through the buffer display.  
+ 
+The  ALT-M  command can be used to mark the beginning and the end of a
+"buffer block".  The ALT-W and ALT-B commands ("write buffer to  disk"
+and  "send  buffer")  will  transfer  this  buffer  block,  if  it  is
+currently "marked".  
+ 
+To exit buffer view mode, press ALT-V again.  
+ 
+M - Mark beginning/end of buffer block 
+ 
+This command only works while "buffer view mode" is active.   Position
+the  buffer  display in the upper window so that the first line in the
+block to be transferred is the first line of the display.  
+ 
+Then press ALT-M to mark the beginning of the block.  
+ 
+Next, position the buffer display in the  upper  window  so  that  the
+first  line  to  be  EXCLUDED  from the block to be transferred is the
+first line of the display.  
+ 
+Then press ALT-M to mark the end of the block.  
+ 
+To mark a different block, repeat this sequence.  To erase the  marks,
+press ALT-M twice, or exit buffer view mode.  
+ 
+E - Enter buffer entry mode 
+ 
+Entering  buffer  entry  mode causes the screen to split into an upper
+and a lower window, similar to the effect of the  ALT-V  (buffer  view
+mode) command.  
+ 
+However,  entering  buffer  entry  mode  CLEARS  the  buffer,  and all
+subsequent keyboard input is appended to the  buffer  display  in  the
+upper window.  
+ 
+
+
+
+
+
+
+DELPHIterm Users Guide         01/17/87            (c) 1987 Rick Adams
+
+Use  the  left-arrow  key  to  backspace.    You  can  use this key to
+backspace to the left of the left margin, thus accessing the  previous
+line(s), if desired.  
+ 
+When  you  have  entered the message that you want to send, use either
+the ALT-B command to send the contents  of  the  buffer,  or  hit  the
+BREAK key.  
+ 
+If  the  BREAK key is pressed while in buffer entry mode, the contents
+of the buffer will be sent, and then the buffer will be cleared.   You
+may then enter another message.  
+ 
+To exit buffer entry mode, press ALT-E again.  
+ 
+Q - Quit DELPHIterm 
+ 
+

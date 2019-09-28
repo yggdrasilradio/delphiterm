@@ -1,0 +1,271 @@
+&F1
+ATN3
+~CONNECT 2400 RELIABLE
+~^G3^@^G1^D^G1^
+~TERMINAL=~
+~@~c delphi
+~Username: ~rickadams
+~Password: ~passwordgoeshere
+&CIS
+at$mb300
+~OK
+~atdt5791490
+~CONNECT
+~^G2^~User ID: ~74347,5242
+~Password: ~passwordgoeshere
+&F2
+&
+~ATDT5276180
+~CONNECT 2400~^G9^a
+~in: ~delphi
+~Username: ~rickadams
+~Password: ~passwordgoeshere
+ATDT18008768342
+~login name: ~rca
+~system: ~fico8
+~login: ~rca
+~Password:~passwordgoeshere
+&TAILPIPE
+Frankly, I think I'd rather put my mouth around the
+tailpipe of a Greyhound bus!
+&STOP
+    /-----\
+   /  NOW  \
+  +---------+
+  ! S T O P !
+  +---------+
+   \ THAT! /
+    \-----/
+&SMILE
+    -----
+  / O   O \
+ (         )    (SMILE)
+  \ \.../ /
+    ----- 
+&L1
+HA HA HA HA!!
+&L2
+HA * HA * HA * HA * HA !!
+&L3
+Loud laughter, holding sides, (giggle), falling off of
+chair, rolling on floor, etc.
+&L4
+Fall off chair, loud laughter, impact on floor, rolling on
+floor, pictures fall off walls, more laughter, more rolling,
+tears streaming from eyes, burst into uncontrollable
+giggling, loud laughter, bury face in hands, loud
+giggling, wipe tears from eyes, OH! laugh again, THAT!
+WAS! A! GOOD! ONE!
+&RUN
+
+            O
+          //\/
+    .....\/\
+
+      GOTTA RUN!
+
+&SIGNOFF
+- about to sign off -
+- reaching for the cntl-z key -
+- found the cntl-z key -
+- pressing the cntl-z key -
+- here we go! -
+- signing off -
+- really signing off -
+- no, i really mean it! -
+- bye, kids! -
+&COMPUTER
+  /-----------\
+  I /-------\ I THE COLOR
+  I I       I I COMPUTER
+  I I       I I    3!!
+  I \-------/ I
+  \-----------/
+  /O O O O O O\
+ /O O O O O O O\
+(               )
+ ---------------
+&APPLAUSE1
+Applause, cheering
+&APPLAUSE2
+Loud applause, cheering, whistles, clapping, standing
+ovation, flag waving, fireworks going off!
+&APPLAUSE3
+Loud applause, cheering, whistles, clapping, a man
+comes out and gives you the keys to the city, dancing
+girls come in from the wings, standing ovation,
+flag waving, fireworks going off, national holiday
+has just been declared in your honor, etc. etc.
+&PLEASE
+
+        Pretty Please??
+    _    _          _    _
+  /   \/   \      /   \/   \
+ (  pretty  )    (  pretty  )
+  \ please /      \ please /
+    \    /          \    /
+      \/              \/
+    _    _          _    _
+  /   \/   \      /   \/   \
+ (  pretty  )    (  pretty  )
+  \ please /      \ please /
+    \    /          \    /
+      \/              \/
+      With Sugar on Top???
+
+&KEYBOARD
+   ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___ ___     ___
+  | ! | " | # | $ | % |   | ' | ( | ) |   | * | = |   |ESC|
+  | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 0 | : | _ |   |BRK|
+ _|___|___|___|___|___|___|___|___|___|___|___|___|_ _|___|
+|   |   |   |   |   |   |   |   |   |   |   |   |   |   |
+|ALT| Q | W | E | R | T | Y | U | I | O | P | @ |CLR| ^ |
+|___|___|___|___|___|___|___|___|___|___|___|___|___|___|_
+ |   |   |   |   |   |   |   |   |   |   |   |    |   |   |
+ |CTL| A | S | D | F | G | H | J | K | L | ; |ENTR|<- | ->|
+ |___|___|___|___|___|___|___|___|___|___|___|____|___|___|
+  |    |   |   |   |   |   |   |   | < | > | ? |    |   |
+  |SHFT| Z | X | C | V | B | N | M | , | . | / |SHFT| v |
+  |____|___|___|___|___|___|___|___|___|___|___|____|___|_
+            |                               |     |   |   |
+            |            SPACE              |     |F1 |F2 |
+            |_______________________________|     |___|___|
+&TAKEOFF
+
+        gotta take off
+----
+\   \       -----
+ \---\------\-----\-------.
+  /  /   O   O   O   O   O \
+ /--/\-------/      /--------)
+            /     /)
+           /     /-)
+           -----
+&WET
+  ,'',    ,'',    ,'
+,','',',,','',',,','
+, YOU'RE  ALL WET ','
+,','',',,','',',,','
+,'    ',,'    ',,' 
+&YES
+.   , _  _  l
+ \./ (_ (_  l
+  l  (_  _) .
+&NO
+l\ l  _
+l \l (_) .
+&512K
+         ,
+       ,' ',
+     ,'  o  ',
+   ,'         ',
+ ,'    512 K    ',
+<       ON        >
+ ',    BOARD    ,'
+   ',         ,'
+     ',     ,'
+       ', ,'
+         '
+&PARTY
+         ,
+       ,' ',
+     ,'  o  ',
+   ,'         ',
+ ,'   DELPHI    ',
+<   CONFERENCE    >
+ ', PARTY ANIMAL,'
+   ', ON BOARD,'
+     ',     ,'
+       ', ,'
+         '
+&DTERM
+         ,
+       ,' ',
+     ,'  o  ',
+   ,'         ',
+ ,'             ',
+<   DELPHITERM    >
+ ',     ON      ,'
+   ',  BOARD  ,'
+     ',     ,'
+       ', ,'
+         '
+&COFFEE
+   ) ))
+  ( ((                   (( (     Hot coffee, coming up...
+ .____        (( (        )) )
+  \__/___      )) )       _______
+ /----\ \\     _______   !    ! ))
+(      )_))   !    ! ))  !____!//
+ \____/       !____!//
+&DONUTS
+ .--.   .--.
+( () ) ( () ) .--.
+ '--'   '--' ( () )
+              '--'
+Did somebody want some donuts?
+&POPCORN
+     ...
+  .o@o@o@o.
+ _@@o@o@@o@_  Popcorn
+(___________) is served!
+ \         /
+  \_______/
+&PRINT
+   ___________
+  (         (_)
+   \         \     Now, THIS is something I'll want to print out!
+  /=)_________)=\_
+ /_______________\)    Brrzzzzaaaaap, brrzzzzaaaaaap!
+(___    oooo   ___)
+ \_______________/
+&HAPPY
+  ________
+ / _______)_
+( / __ __ \ )
+ \) _o o_ (/   Whoopeee!!!
+  (   v   )
+   \\___//
+   !\___/!
+---!     !---
+    \___/
+&SAD
+  ________
+ / _______)_
+( /       \ )
+ \) /o o\ (/    Awwwwwww!
+  (   v   )
+   \ ___ /
+   !\___/!
+---!     !---
+    \___/
+&MAD
+  ________
+ / _______)_
+( /  \ /  \ )
+ \) (o o) (/   Grrrrrr!!
+  (   v   )
+   \ ___ /
+   !\___/!
+---!     !---
+    \___/
+&GREED
+  ________
+ / _______)_
+( /  _ _  \ )
+ \) ($ $) (/   Oh, yeah!!
+  (   v   )
+   \\___//
+   !\___/!
+---!     !---
+    \___/
+&COUCH
+                                     _o_
+           _____________________    /   \
+          (  . . . . . . . . .  )  /_____\
+   ______ ( . . . . . . . . . . ) ___/ \_
+  /     //  /)_______________(\  \\ (___)\
+ /_____/(__)/_________________\(__)\______\
+ !!   !!!  !___________________!  ! !!   !!
+ !!   !!!_________________________! !!   !!
+&
